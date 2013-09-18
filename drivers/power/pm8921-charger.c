@@ -3571,11 +3571,6 @@ static void handle_usb_insertion_removal(struct pm8921_chg_chip *chip)
 /* OPPO 2012-08-09 chendx Add begin for USBIN charger remove from otg driver */
 #ifdef CONFIG_VENDOR_EDIT
 		//pm8921_chg_connected(USB_INVALID_CHARGER);
-		
-		/* offmode charging led */
-		if (MSM_BOOT_MODE__CHARGE == get_boot_mode()){
-			sled_turn_off();
-		}
 #endif
 	
 /* OPPO 2013-02-28 chendx Add begin for notify with bms */
@@ -3900,6 +3895,15 @@ static irqreturn_t usbin_valid_irq_handler(int irq, void *data)
 	schedule_work(&the_chip->cancel_charge_det);
 #endif
 /*OPPO,Jiangsm add end*/
+
+#ifdef CONFIG_VENDOR_EDIT		
+	/* offmode charging led */
+	/* turn off always just to make sure we dont miss a plug event */
+	if (MSM_BOOT_MODE__CHARGE == get_boot_mode()){
+		sled_turn_off();
+	}
+#endif
+
 	if (usb_target_ma)
 		schedule_delayed_work(&the_chip->vin_collapse_check_work,
 				      round_jiffies_relative(msecs_to_jiffies
